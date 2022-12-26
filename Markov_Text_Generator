@@ -1,0 +1,37 @@
+import random
+
+#removes non-alphabetic characters 
+import re 
+
+def generate_text(filename, order, num_words):
+  # Read the file and format text
+  with open("input.txt", 'r') as f:
+    text = f.read()
+  text = text.lower()
+  text = re.sub(r'[^a-z\s]', '', text)
+
+  # Create the Markov chain
+  markov_chain = {}
+  words = text.split()
+  for i in range(len(words) - order):
+    key = tuple(words[i:i+order])
+    value = words[i+order]
+    if key in markov_chain:
+      markov_chain[key].append(value)
+    else:
+      markov_chain[key] = [value]
+
+  # Generate text
+  current_key = random.choice(list(markov_chain.keys()))
+  output = " ".join(current_key)
+  for _ in range(num_words):
+    next_word = random.choice(markov_chain[current_key])
+    output += " " + next_word
+    current_key = tuple(current_key[1:]) + (next_word,)
+    if current_key not in markov_chain:
+      break
+  return output
+
+# Generate x words of text in the style of "input.txt" with a Markov chain of order n
+output = generate_text("input.txt", n, x)
+print(output)
