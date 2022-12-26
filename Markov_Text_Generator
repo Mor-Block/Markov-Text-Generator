@@ -1,11 +1,11 @@
 import random
 
-#removes non-alphabetic characters 
-import re 
+#removes non-alphabetic characters
+import re
 
 def generate_text(filename, order, num_words):
-  # Read the file and format text
-  with open("input.txt", 'r') as f:
+  # Read the file and prepare text
+  with open(filename, 'r') as f:
     text = f.read()
   text = text.lower()
   text = re.sub(r'[^a-z\s]', '', text)
@@ -24,14 +24,15 @@ def generate_text(filename, order, num_words):
   # Generate text
   current_key = random.choice(list(markov_chain.keys()))
   output = " ".join(current_key)
-  for _ in range(num_words):
+  for i in range(num_words):
     next_word = random.choice(markov_chain[current_key])
     output += " " + next_word
     current_key = tuple(current_key[1:]) + (next_word,)
-    if current_key not in markov_chain:
+    # Ensures a natural termination point within 10 words of the end
+    if '.' in current_key and i > num_words - 10:
       break
   return output
 
-# Generate x words of text in the style of "input.txt" with a Markov chain of order n
+# Generate x number of words in the style of "input.txt" with a Markov chain of order n
 output = generate_text("input.txt", n, x)
 print(output)
